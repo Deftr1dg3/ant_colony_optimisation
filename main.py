@@ -1,22 +1,26 @@
+#!/usr/bin/env python3
 
+import time
 import random
 import numpy as np 
+from threading import Thread
 
 from generate_points_matrix import generate_matrix
 from get_min_distance import get_min_distance
-[1, 5, 0, 3, 4, 2, 6]
+
+
 
 # Points to visit
-POINTS = 7
+POINTS = 9
 # Defines influence of Pheromones
-ALPHA = 5
+ALPHA = 7
 # Defines influence of distance between current_node and next_node
 BETA = 3
 ANT_FACTOR = 1
 EVAPORATE_FACTOR = 0.8
 RANDOM_CHOICE_FACTOR = 0.05
-ITERATIONS = 10
-MIN_PHERAMON = 0.001
+ITERATIONS = 50
+MIN_PHERAMON = 0.000001
 
 PHEROMONES = np.ones((POINTS, POINTS))
 DISTANCE = generate_matrix(POINTS)
@@ -122,6 +126,18 @@ def update_best_ant_pheromones(ant: Ant) -> None:
         PHEROMONES[ant.path[i], ant.path[i - 1]] += ant.fitness()
 
 
+
+def time_counter():
+    total_sec = 0
+    while True:
+        m, s = divmod(total_sec, 60)
+        m_str = f"{m}".rjust(2, "0")
+        s_str = f"{s}".rjust(2, "0")
+        print(f"\r\x1b[32m[BACKTRACKING]\x1b[0m In Progress ... {m_str}:{s_str}", end="")
+        time.sleep(1)
+        total_sec += 1
+    
+
 def main():
     
     best_ant = None
@@ -149,20 +165,31 @@ def main():
         update_best_ant_pheromones(best_ant)
             
         
-        # print(f"\n{iteration = }: {best_ant.distance = }\n")
-        print(f"\n{iteration = }: {best_ant.distance = } {best_ant.path = }\n")
+        print(f"\n{iteration = }: {best_ant.distance = }\n")
+        # print(f"\n{iteration = }: {best_ant.distance = } {best_ant.path = }\n")
     
-    print(PHEROMONES)
+    # print(PHEROMONES)
         
         
     
     
 if __name__ == '__main__':
+    # ------------------------------------
     # Start ACO ----
     main()
     
+    # ------------------------------------    
+    # Show DISTANCE table
+
     # print(f"DISTANCE:\n{DISTANCE}")
     
-    res = get_min_distance(DISTANCE)
-    print(f"\nPersice {res = }\n")
+    # ------------------------------------
+    # Launch backtracking algorith to get persise result for comparation
+    # for 11 points backtracking takes arount 1:11 min in Mac M1
+    
+    # progress_thread = Thread(target=time_counter, daemon=True)
+    # progress_thread.start()
+    
+    # res = get_min_distance(DISTANCE)
+    # print(f"\n\nPersice {res = }\n")
 
